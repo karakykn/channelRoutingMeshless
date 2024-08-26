@@ -1,9 +1,8 @@
 import numpy as np
-import pandas as pd
-import os
 
 class Rbfcm(object):
-    """Radial Basis function collocation method for 1D shallow water equations
+    """Radial Basis function collocation method for 1D diffusive wave equation. Written by Ismet Karakan.
+    For further questions: karakan@sc.edu
 
     Parameters
     -------------

@@ -4,8 +4,6 @@ from source.rbfcm import *
 soln = Rbfcm("case1/inputs/input.txt")
 soln.solveUnsteadyChannel()
 
-
-
 """visualize"""
 timeIter = float(soln.USBC.size)
 N = soln.nodeNo
