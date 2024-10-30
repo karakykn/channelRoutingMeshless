@@ -1,0 +1,33 @@
+path for locations (from the root of the case.py):
+case2/inputs/channel2/locations.txt
+
+path for mannings:
+case2/inputs/channel2/mannings.txt
+
+path for bed slopes:
+case2/inputs/channel2/slopes.txt
+
+path for channel width:
+case2/inputs/channel2/channelW.txt
+
+path for initial discharge (from the root of the case.py):
+case2/inputs/channel2/initialQ.txt
+
+path for initial water level (from the root of the case.py):
+case2/inputs/channel2/initialH.txt
+
+path for upstream BC:
+case2/inputs/channel2/upstreamBC.txt
+
+path for downstream BC:
+case2/inputs/channel2/downstreamBC.txt
+
+path for source (lateral q):
+case2/inputs/channel2/source.txt
+
+boundary type (0 for dirichlet, 1 for neumann, 2 for joint):
+[0,1]
+
+channel side slope (channel sides are assumed to be symmetrical, 0 for rectangle, 1 for 45 degrees, write x distance for unit height in y-dir):
+.5
+KEEP THIS LAST LINE OF THIS TEXT FILE!
