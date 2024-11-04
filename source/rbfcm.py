@@ -55,7 +55,7 @@ class Network(object):
 
     def redistributeQ(self):
         for i in range(self.noChannels):
-            self.channel[i].Q = self.globalSoln[self.sne[i,0]:self.sne[i,1]]
+            self.channel[i].Q = np.matmul(self.channel[i].f, self.globalAlph[self.sne[i,0]:self.sne[i,1]])
 
 
     def solveUnstedyNetwork(self):
@@ -66,7 +66,7 @@ class Network(object):
             for tt in range(1, timeIter):
                 self.connectChannels(tt)
                 self.invGlobal = np.linalg.pinv(self.globalMatrix)
-                self.globalSoln = np.matmul(self.invGlobal, self.globalRHS)
+                self.globalAlph = np.matmul(self.invGlobal, self.globalRHS)
 
                 self.redistributeQ()
 
@@ -79,15 +79,6 @@ class Network(object):
                 for i in range(self.noChannels):
                     np.savetxt(self.outputFolder + 'channel' + str(i) + 'Q' + str(tt) +'.txt', self.channel[i].Q)
                     np.savetxt(self.outputFolder + 'channel' + str(i) + 'h' + str(tt) +'.txt', self.channel[i].h)
-
-
-
-
-
-
-
-
-    """add calculate h function here, it will be similar to the one in single channel class."""
 
 def buildMQ(channel):
     shapeParameter = channel.beta

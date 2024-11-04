@@ -1,64 +1,85 @@
 import os
+import re
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Base directory
-base_dir = 'case2'
+# Directory containing the text files
+directory = 'case2/outputs'
 
-# Output folders to use
-output_folders = ['output46', 'output47', 'output48', 'output49', 'output50']
+# Find all files and extract the maximum channel and iteration numbers
+channels = set()
+iterations = set()
 
-# Define linestyles for each plot
-linestyles = ['-', '--', ':', '-.', (0, (3, 5, 1, 5, 1, 5))]  # Solid, dashed, and dotted lines
-dx = ["$2000\,m$", "$1000\,m$", "$500\,m$"]
-dt = ["$1000\,s$", "$500\,s$", "$250\,s$", "$125\,s$"]
-dl = ["$0\,m^2s^{-1}$", "$100\,m^2s^{-1}$", "$200\,m^2s^{-1}$", "$300\,m^2s^{-1}$", "$400\,m^2s^{-1}$", ]
+for filename in os.listdir(directory):
+    match = re.match(r"channel(\d)[Qh](\d+)\.txt", filename)
+    if match:
+        channels.add(int(match.group(1)))
+        iterations.add(int(match.group(2)))
 
-# Initialize a list to store time and downstreamQ data for each folder
-time_data_list = []
-downstreamQ_data_list = []
+# Convert to sorted lists to index arrays correctly
+channels = sorted(list(channels))
+iterations = sorted(list(iterations), key=int)
 
-# Iterate over the specified output folders
-for output_folder in output_folders:
-    folder_path = os.path.join(base_dir, output_folder)
+# Initialize numpy arrays for Q and h first and last values for each channel and iteration
+Q_values_first = np.full((len(channels), len(iterations)), np.nan)
+Q_values_last = np.full((len(channels), len(iterations)), np.nan)
+h_values_first = np.full((len(channels), len(iterations)), np.nan)
+h_values_last = np.full((len(channels), len(iterations)), np.nan)
 
-    # Check if time.txt file exists
-    time_file = os.path.join(folder_path, 'time.txt')
-    if not os.path.exists(time_file):
-        print(f"Error: {time_file} not found")
-        continue
+# Load data from files
+for filename in os.listdir(directory):
+    match = re.match(r"channel(\d)([Qh])(\d+)\.txt", filename)
+    if match:
+        channel = int(match.group(1))
+        parameter = match.group(2)
+        iteration = int(match.group(3))
 
-    # Load time data
-    time_data = np.loadtxt(time_file)
-    time_data_list.append(time_data)
+        # Find the index in the arrays
+        channel_idx = channels.index(channel)
+        iteration_idx = iterations.index(iteration)
 
-    # Load downstreamQxxxx.txt file
-    downstreamQ_files = [f for f in os.listdir(folder_path) if f.startswith('downstreamQ')]
-    if len(downstreamQ_files) == 0:
-        print(f"Error: No downstreamQxxxx.txt file found in {folder_path}")
-        continue
+        # Read first and last values from the file
+        filepath = os.path.join(directory, filename)
+        with open(filepath, 'r') as file:
+            lines = file.readlines()
+            if lines:
+                first_value = float(lines[0].strip())
+                last_value = float(lines[-1].strip())
 
-    downstreamQ_path = os.path.join(folder_path, downstreamQ_files[0])
+                # Assign first and last values to the correct arrays based on parameter
+                if parameter == 'Q':
+                    Q_values_first[channel_idx, iteration_idx] = first_value
+                    Q_values_last[channel_idx, iteration_idx] = last_value
+                elif parameter == 'h':
+                    h_values_first[channel_idx, iteration_idx] = first_value
+                    h_values_last[channel_idx, iteration_idx] = last_value
 
-    # Load downstreamQ data
-    downstreamQ_data = np.loadtxt(downstreamQ_path)
-    downstreamQ_data_list.append(downstreamQ_data)
+# Plotting first and last values for Q
+Q_values_first[0, :] -= 20
+Q_values_last[0, :] -= 20
+plt.figure(figsize=(10, 6))
+for i, channel in enumerate(channels):
+    plt.plot(iterations, Q_values_first[i, :], '--', label=f'Channel {channel} - Q (First Value)')
+    plt.plot(iterations, Q_values_last[i, :], label=f'Channel {channel} - Q (Last Value)')
 
-# Plotting (only if data is loaded)
-if time_data_list and downstreamQ_data_list:
-    plt.figure(figsize=(10, 6))
 
-    # Plot each downstreamQxxxx data against its corresponding time data with different linestyles
-    for i in range(len(time_data_list)):
-        plt.plot(time_data_list[i]/3600, downstreamQ_data_list[i], label='$D_{limit}=$' + f'{dl[i]}', linestyle=linestyles[i], color="k")
+plt.xlabel('Time Iteration')
+plt.ylabel('Q Value')
+# plt.ylim(19,25)
+plt.title('First and Last Q Values for Each Channel Over Time Iterations')
+plt.legend()
+plt.grid(True)
+plt.show()
 
-    # Labeling the plot
-    plt.xlabel('Time (h)')
-    plt.ylabel('Discharge ($m^3s^{-1}$)')
-    plt.title('Downstream Discharge Over Time (RBFCM, $\Delta x=500\,m$, $\Delta t=500\,s$)')
-    plt.legend()
-    plt.grid(True)
-    plt.savefig("case1/dx_dt_constant.pdf")
-    plt.show()
-else:
-    print("No data to plot.")
+# Plotting first and last values for h
+# plt.figure(figsize=(10, 6))
+# for i, channel in enumerate(channels):
+#     plt.plot(iterations, h_values_first[i, :], 'o--', label=f'Channel {channel} - h (First Value)')
+#     plt.plot(iterations, h_values_last[i, :], label=f'Channel {channel} - h (Last Value)')
+#
+# plt.xlabel('Time Iteration')
+# plt.ylabel('h Value')
+# plt.title('First and Last h Values for Each Channel Over Time Iterations')
+# plt.legend()
+# plt.grid(True)
+# plt.show()
