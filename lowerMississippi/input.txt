@@ -1,0 +1,63 @@
+dt (sec):
+1000
+
+diffusion coeff upper limit:
+1000
+
+path for locations (from the root of the case.py):
+lowerMississippi/locations.txt
+
+path for mannings:
+lowerMississippi/mannings.txt
+
+path for bed slopes:
+lowerMississippi/slopes.txt
+
+path for channel width:
+lowerMississippi/channelW.txt
+
+path for initial discharge (from the root of the case.py):
+lowerMississippi/initialQ.txt
+
+path for initial water level (from the root of the case.py):
+lowerMississippi/initialH.txt
+
+path for upstream BC:
+lowerMississippi/upstreamBC.txt
+
+path for downstream BC:
+lowerMississippi/downstreamBC.txt
+
+path for source (lateral q):
+lowerMississippi/source.txt
+
+boundary type (0 for dirichlet, 1 for neumann):
+[0,1]
+
+time scheme (only backward for now):
+backward
+
+print step:
+1
+
+print output folder (use absolute path here):
+lowerMississippi/output
+
+type of rbf (MQ, TPS):
+TPS
+
+beta or shape parameter:
+6
+
+augment (1 for yes 0 for no):
+0
+
+channel side slope (channel sides are assumed to be symmetrical, 0 for rectangle, 1 for 45 degrees, write x distance for unit height in y-dir):
+0.5
+
+simulation time in seconds:
+86400
+
+path for upstream H:
+lowerMississippi/upstreamH.txt
+KEEP THIS LAST LINE OF THIS TEXT FILE!

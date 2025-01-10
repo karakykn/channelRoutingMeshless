@@ -1,12 +1,5 @@
 import numpy as np
 
-class Network(object):
-    def __init__(self, networkDataPath):
-        """channel count
-        by that channel count open an iteration, read the files"""
-
-
-
 
 class SingleChannel(object):
     """Radial Basis function collocation method for 1D diffusive wave equation. Written by Ismet Karakan.
