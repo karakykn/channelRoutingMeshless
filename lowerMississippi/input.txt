@@ -60,4 +60,7 @@ simulation time in seconds:
 
 path for upstream H:
 lowerMississippi/upstreamH.txt
+
+path for river profile:
+lowerMississippi/riverProfile.txt
 KEEP THIS LAST LINE OF THIS TEXT FILE!

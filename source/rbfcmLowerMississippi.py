@@ -63,6 +63,7 @@ class SingleChannel(object):
         self.isAugment = float(lines[52][:-1])
         self.channelSideSlope = float(lines[55][:-1])
         self.simTime = float(lines[58][:-1])
+        self.riverP = np.loadtxt(lines[64][:-1])
 
         file.close()
 
