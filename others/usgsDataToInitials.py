@@ -11,6 +11,10 @@ output_file_path_bc = "../lowerMississippi/upstreamBC.txt"
 # Define the resample time interval (in seconds)
 dt = 3600.0  # Example: 3600 seconds (1 hour)
 
+# Conversion factors
+feet_to_meters = 0.3048  # 1 foot = 0.3048 meters
+cfs_to_cms = 0.0283168  # 1 cubic foot per second = 0.0283168 cubic meters per second
+
 # Read the USGS data file
 columns = [
     "agency_cd", "site_no", "datetime", "gage_height_max", "max_cd",
@@ -21,6 +25,10 @@ data = pd.read_csv(data_file_path, sep='\t', comment='#', names=columns, header=
 # Filter necessary columns and remove unnecessary rows
 data = data[["datetime", "gage_height_mean", "discharge"]]
 data.dropna(inplace=True)
+
+# Convert gage height to meters and discharge to cubic meters per second
+data["gage_height_mean"] *= feet_to_meters
+data["discharge"] *= cfs_to_cms
 
 # Calculate cumulative seconds for the time column
 start_time = data["datetime"].iloc[0]
@@ -36,5 +44,5 @@ new_data.interpolate(method='linear', inplace=True)
 np.savetxt(output_file_path_h, new_data["gage_height_mean"].values, fmt='%f')
 np.savetxt(output_file_path_bc, new_data["discharge"].values, fmt='%f')
 
-print(f"Water surface elevations have been saved to {output_file_path_h}")
-print(f"Discharge data have been saved to {output_file_path_bc}")
+print(f"Water surface elevations (in meters) have been saved to {output_file_path_h}")
+print(f"Discharge data (in cubic meters per second) have been saved to {output_file_path_bc}")

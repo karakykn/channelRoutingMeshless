@@ -1,5 +1,6 @@
 import numpy as np
 import os
+from scipy.interpolate import interp1d
 
 class SingleChannel(object):
     """Radial Basis function collocation method for 1D diffusive wave equation. Written by Ismet Karakan.
@@ -63,7 +64,14 @@ class SingleChannel(object):
         self.isAugment = float(lines[52][:-1])
         self.channelSideSlope = float(lines[55][:-1])
         self.simTime = float(lines[58][:-1])
-        self.riverP = np.loadtxt(lines[64][:-1])
+        self.riverP = np.loadtxt(lines[64][:-1], comments='#', delimiter=',')
+
+        self.riverpH = self.riverP[:, 0]
+        self.riverpArea = self.riverP[:, 2]
+        self.riverpR = self.riverP[:, 3]
+
+        self.Area_interpolator = interp1d(self.riverpH, self.riverpArea, kind='linear', fill_value="extrapolate")
+        self.R_interpolator = interp1d(self.riverpH, self.riverpR, kind='linear', fill_value="extrapolate")
 
         file.close()
 
@@ -225,17 +233,16 @@ class SingleChannel(object):
             )
 
     def calculateH(self):
-        """channelSideSlope=0 means rectangular channel, this part can be directly supplied with the actual values of the channel"""
-        wettedPerimeter = self.channelWidth[0] + 2 * np.sqrt(self.h[0] ** 2 + (self.h[0] * self.channelSideSlope) ** 2)
-        csArea = self.h[0] * self.channelWidth[0] + self.h[0] * (self.h[0] * self.channelSideSlope)
-        R = csArea / wettedPerimeter
+        csArea = self.Area_interpolator(self.h[0])
+        R = self.R_interpolator(self.h[0])
         S_fBackward = self.mannings[0] ** 2 / (csArea * R ** (2 / 3)) ** 2 * self.soln[0] ** 2
+        print("\n")
         for i in range(1,self.nodeNo):
-            wettedPerimeter = self.channelWidth[i] + 2 * np.sqrt(self.h[i] ** 2 + (self.h[i] * self.channelSideSlope) ** 2)
-            csArea = self.h[i] * self.channelWidth[i] + self.h[i] * (self.h[i] * self.channelSideSlope)
-            R = csArea / wettedPerimeter
+            csArea = self.Area_interpolator(self.h[i])
+            R = self.R_interpolator(self.h[i])
             S_f = self.mannings[i] ** 2 / (csArea * R ** (2 / 3)) ** 2 * self.soln[i] ** 2
             self.diff[i] = np.min([self.diffLimit, (np.abs(self.soln[i]) / 2 / (S_f) / self.channelWidth[i])])
             self.conv[i] = 5 * (S_f) ** .3 * np.abs(self.soln[i]) ** .4 / 3 / self.channelWidth[i] ** .4 / self.mannings[i] ** .6
             self.h[i] = self.h[i - 1] - (self.slope[i] + (S_f + S_fBackward)/2) * (self.locations[i] - self.locations[i-1])
             S_fBackward = S_f
+            print(i)
