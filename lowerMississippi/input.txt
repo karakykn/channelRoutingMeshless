@@ -38,10 +38,10 @@ time scheme (only backward for now):
 backward
 
 print step:
-1
+1000
 
 print output folder (use absolute path here):
-lowerMississippi/output
+lowerMississippi/output/
 
 type of rbf (MQ, TPS):
 TPS
@@ -56,7 +56,7 @@ channel side slope (channel sides are assumed to be symmetrical, 0 for rectangle
 0.5
 
 simulation time in seconds:
-86400
+31536000
 
 path for upstream H:
 lowerMississippi/upstreamH.txt

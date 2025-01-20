@@ -64,7 +64,7 @@ class SingleChannel(object):
         self.isAugment = float(lines[52][:-1])
         self.channelSideSlope = float(lines[55][:-1])
         self.simTime = float(lines[58][:-1])
-        self.riverP = np.loadtxt(lines[64][:-1], comments='#', delimiter=',')
+        self.riverP = np.loadtxt(lines[64][:-1], skiprows=1, delimiter=',')
 
         self.riverpH = self.riverP[:, 0]
         self.riverpArea = self.riverP[:, 2]
@@ -213,12 +213,17 @@ class SingleChannel(object):
 
                 time = tt * self.dt
                 if tt % self.printStep == 0:
-                    np.savetxt(self.outputFolder + "q" + str("{:.0f}".format(tt/self.printStep)) + ".txt", self.soln)
-                    np.savetxt(self.outputFolder + "h" + str("{:.0f}".format(tt / self.printStep)) + ".txt", self.h) \
+                    print(f"Time: {self.time[-1]:.0f}s")
+                    np.savetxt(self.outputFolder + "q" + f"{time:.0f}s" + ".txt", self.soln)
+                    np.savetxt(self.outputFolder + "h" + f"{time:.0f}s" + ".txt", self.h)
 
                     self.dsq = np.append(self.dsq, self.soln[-1])
                     self.usq = np.append(self.usq, self.soln[0])
                     self.time = np.append(self.time, time)
+
+            np.savetxt(self.outputFolder + "q" + f"{time:.0f}s" + ".txt", self.soln)
+            np.savetxt(self.outputFolder + "h" + f"{time:.0f}s" + ".txt", self.h)
+
             np.savetxt(
                 self.outputFolder + "downstreamQ" + "{:.0f}".format(self.locations[-1] / (self.nodeNo - 1)) + ".txt",
                 self.dsq
@@ -236,7 +241,6 @@ class SingleChannel(object):
         csArea = self.Area_interpolator(self.h[0])
         R = self.R_interpolator(self.h[0])
         S_fBackward = self.mannings[0] ** 2 / (csArea * R ** (2 / 3)) ** 2 * self.soln[0] ** 2
-        print("\n")
         for i in range(1,self.nodeNo):
             csArea = self.Area_interpolator(self.h[i])
             R = self.R_interpolator(self.h[i])
@@ -245,4 +249,3 @@ class SingleChannel(object):
             self.conv[i] = 5 * (S_f) ** .3 * np.abs(self.soln[i]) ** .4 / 3 / self.channelWidth[i] ** .4 / self.mannings[i] ** .6
             self.h[i] = self.h[i - 1] - (self.slope[i] + (S_f + S_fBackward)/2) * (self.locations[i] - self.locations[i-1])
             S_fBackward = S_f
-            print(i)

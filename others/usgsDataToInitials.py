@@ -7,9 +7,13 @@ import numpy as np
 data_file_path = "../lowerMississippi/baton rouge/usgs.txt"
 output_file_path_h = "../lowerMississippi/upstreamH.txt"
 output_file_path_bc = "../lowerMississippi/upstreamBC.txt"
+output_file_path_bcdc = "../lowerMississippi/downstreamBC.txt"
+output_file_path_initQ = "../lowerMississippi/initialQ.txt"
+output_file_path_initH = "../lowerMississippi/initialH.txt"
 
 # Define the resample time interval (in seconds)
-dt = 3600.0  # Example: 3600 seconds (1 hour)
+dt = 1000.0  # Example: 3600 seconds (1 hour)
+nodeNo = 11
 
 # Conversion factors
 feet_to_meters = 0.3048  # 1 foot = 0.3048 meters
@@ -43,6 +47,9 @@ new_data.interpolate(method='linear', inplace=True)
 # Save the results in separate files without headers or time column
 np.savetxt(output_file_path_h, new_data["gage_height_mean"].values, fmt='%f')
 np.savetxt(output_file_path_bc, new_data["discharge"].values, fmt='%f')
+np.savetxt(output_file_path_bcdc, np.zeros(new_data.shape[0]), fmt='%f')
+np.savetxt(output_file_path_initQ, np.ones(nodeNo) * new_data["discharge"][0], fmt='%f') #setting first value in the dataset as initial value for all points in space.
+np.savetxt(output_file_path_initH, np.ones(nodeNo) * new_data["gage_height_mean"][0], fmt='%f')
 
 print(f"Water surface elevations (in meters) have been saved to {output_file_path_h}")
 print(f"Discharge data (in cubic meters per second) have been saved to {output_file_path_bc}")

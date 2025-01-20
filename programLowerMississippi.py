@@ -5,6 +5,3 @@ from source.rbfcmLowerMississippi import *
 
 soln = SingleChannel("lowerMississippi/input.txt")
 soln.solveUnsteadyChannel()
-
-
-
