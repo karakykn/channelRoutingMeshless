@@ -1,0 +1,60 @@
+dt (sec):
+500
+
+diffusion coeff upper limit:
+400
+
+path for locations (from the root of the case.py):
+case1-1/dx1000/locations.txt
+
+path for mannings:
+case1-1/dx1000/mannings.txt
+
+path for bed slopes:
+case1-1/dx1000/slopes.txt
+
+path for channel width:
+case1-1/dx1000/channelW.txt
+
+path for initial discharge (from the root of the case.py):
+case1-1/dx1000/initialQ.txt
+
+path for initial water level (from the root of the case.py):
+case1-1/dx1000/initialH.txt
+
+path for upstream BC:
+case1-1/dt500/upstreamBC.txt
+
+path for downstream BC:
+case1-1/dt500/downstreamBC.txt
+
+path for source (lateral q):
+case1-1/dx1000/source.txt
+
+boundary type (0 for dirichlet, 1 for neumann):
+[0,1]
+
+time scheme (only backward for now):
+backward
+
+print step:
+1
+
+print output folder (use absolute path here):
+case1-1/output4/
+
+type of rbf (MQ, TPS):
+TPS
+
+beta or shape parameter:
+6
+
+augment (1 for yes 0 for no):
+0
+
+channel side slope (channel sides are assumed to be symmetrical, 0 for rectangle, 1 for 45 degrees, write x distance for unit height in y-dir):
+0.5
+
+simulation time in seconds:
+86400
+KEEP THIS LAST LINE OF THIS TEXT FILE!

@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Directory containing the text files
-directory = 'case2/outputs'
+directory = 'case1N/output'
 
 # Find all files and extract the maximum channel and iteration numbers
 channels = set()

@@ -48,7 +48,6 @@ class SingleChannel(object):
         self.Nind = np.arange(N - 2, -1, -1, dtype=int)
         self.soln = np.loadtxt(lines[19][:-1])
         self.mannings = np.loadtxt(lines[10][:-1])
-        self.channelWidth = np.loadtxt(lines[16][:-1])
         self.slope = np.loadtxt(lines[13][:-1])
         self.diffLimit = float(lines[4][:-1])
         self.USBC = np.loadtxt(lines[25][:-1])
@@ -69,19 +68,22 @@ class SingleChannel(object):
         self.riverpH = self.riverP[:, 0]
         self.riverpArea = self.riverP[:, 2]
         self.riverpR = self.riverP[:, 3]
+        self.PchannelW = self.riverP[:, 1]
 
+        self.width_interpolator = interp1d(self.riverpH, self.PchannelW, kind='linear', fill_value="extrapolate")
         self.Area_interpolator = interp1d(self.riverpH, self.riverpArea, kind='linear', fill_value="extrapolate")
         self.R_interpolator = interp1d(self.riverpH, self.riverpR, kind='linear', fill_value="extrapolate")
 
         file.close()
 
-        for i in self.Nind:
-            wettedPerimeter = self.channelWidth[i] + 2 * np.sqrt(self.h[i] ** 2 + (self.h[i] / 2) ** 2)
-            csArea = self.h[i] * self.channelWidth[i] + self.h[i] ** 2 / 2
-            R = csArea / wettedPerimeter
-            S_f = self.mannings[i] ** 2 / (csArea * R ** (2 / 3)) ** 2 * self.soln[i] ** 2 ## constant mannings
-            self.diff[i] = np.min([self.diffLimit, (np.abs(self.soln[i]) / 2 / (S_f) / self.channelWidth[i])])
-            self.conv[i] = 5 * (S_f) ** .3 * np.abs(self.soln[i]) ** .4 / 3 / self.channelWidth[i] ** .4 / self.mannings[i] ** .6
+        for i in range(1, self.nodeNo):
+            cw = self.width_interpolator(self.h[i])
+            csArea = self.Area_interpolator(self.h[i])
+            R = self.R_interpolator(self.h[i])
+            S_f = self.mannings[i] ** 2 / (csArea * R ** (2 / 3)) ** 2 * self.soln[i] ** 2
+            self.diff[i] = np.min([self.diffLimit, (np.abs(self.soln[i]) / 2 / (S_f) / cw)])
+            self.conv[i] = 5 * (S_f) ** .3 * np.abs(self.soln[i]) ** .4 / 3 / cw ** .4 / self.mannings[i] ** .6
+
 
         if self.rbfType == "MQ":
             self.buildMQ(self.beta)
@@ -223,6 +225,10 @@ class SingleChannel(object):
 
             np.savetxt(self.outputFolder + "q" + f"{time:.0f}s" + ".txt", self.soln)
             np.savetxt(self.outputFolder + "h" + f"{time:.0f}s" + ".txt", self.h)
+            self.dsq = np.append(self.dsq, self.soln[-1])
+            self.usq = np.append(self.usq, self.soln[0])
+            self.time = np.append(self.time, time)
+            print(f"Time: {self.time[-1]:.0f}s, the run is over.")
 
             np.savetxt(
                 self.outputFolder + "downstreamQ" + "{:.0f}".format(self.locations[-1] / (self.nodeNo - 1)) + ".txt",
@@ -242,10 +248,11 @@ class SingleChannel(object):
         R = self.R_interpolator(self.h[0])
         S_fBackward = self.mannings[0] ** 2 / (csArea * R ** (2 / 3)) ** 2 * self.soln[0] ** 2
         for i in range(1,self.nodeNo):
+            cw = self.width_interpolator(self.h[i])
             csArea = self.Area_interpolator(self.h[i])
             R = self.R_interpolator(self.h[i])
             S_f = self.mannings[i] ** 2 / (csArea * R ** (2 / 3)) ** 2 * self.soln[i] ** 2
-            self.diff[i] = np.min([self.diffLimit, (np.abs(self.soln[i]) / 2 / (S_f) / self.channelWidth[i])])
-            self.conv[i] = 5 * (S_f) ** .3 * np.abs(self.soln[i]) ** .4 / 3 / self.channelWidth[i] ** .4 / self.mannings[i] ** .6
+            self.diff[i] = np.min([self.diffLimit, (np.abs(self.soln[i]) / 2 / (S_f) / cw)])
+            self.conv[i] = 5 * (S_f) ** .3 * np.abs(self.soln[i]) ** .4 / 3 / cw ** .4 / self.mannings[i] ** .6
             self.h[i] = self.h[i - 1] - (self.slope[i] + (S_f + S_fBackward)/2) * (self.locations[i] - self.locations[i-1])
             S_fBackward = S_f

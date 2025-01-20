@@ -11,9 +11,21 @@ output_file_path_bcdc = "../lowerMississippi/downstreamBC.txt"
 output_file_path_initQ = "../lowerMississippi/initialQ.txt"
 output_file_path_initH = "../lowerMississippi/initialH.txt"
 
+output_file_path_locs = "../lowerMississippi/locations.txt"
+output_file_path_mannings = "../lowerMississippi/mannings.txt"
+output_file_path_slopes = "../lowerMississippi/slopes.txt"
+output_file_path_source = "../lowerMississippi/source.txt"
+
 # Define the resample time interval (in seconds)
 dt = 1000.0  # Example: 3600 seconds (1 hour)
-nodeNo = 11
+L = 86000
+dx = 1000
+
+locs = np.arange(0,L+dx, dx)
+nodeNo = locs.shape[0]
+manns = np.ones(nodeNo) * .012
+slopes = np.ones(nodeNo) * 5 / L
+source = np.zeros(nodeNo)
 
 # Conversion factors
 feet_to_meters = 0.3048  # 1 foot = 0.3048 meters
@@ -48,8 +60,14 @@ new_data.interpolate(method='linear', inplace=True)
 np.savetxt(output_file_path_h, new_data["gage_height_mean"].values, fmt='%f')
 np.savetxt(output_file_path_bc, new_data["discharge"].values, fmt='%f')
 np.savetxt(output_file_path_bcdc, np.zeros(new_data.shape[0]), fmt='%f')
+
 np.savetxt(output_file_path_initQ, np.ones(nodeNo) * new_data["discharge"][0], fmt='%f') #setting first value in the dataset as initial value for all points in space.
 np.savetxt(output_file_path_initH, np.ones(nodeNo) * new_data["gage_height_mean"][0], fmt='%f')
+
+np.savetxt(output_file_path_locs, locs, fmt='%f') #setting first value in the dataset as initial value for all points in space.
+np.savetxt(output_file_path_mannings, manns, fmt='%f')
+np.savetxt(output_file_path_slopes, slopes, fmt='%f') #setting first value in the dataset as initial value for all points in space.
+np.savetxt(output_file_path_source, source, fmt='%f')
 
 print(f"Water surface elevations (in meters) have been saved to {output_file_path_h}")
 print(f"Discharge data (in cubic meters per second) have been saved to {output_file_path_bc}")

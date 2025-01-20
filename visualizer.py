@@ -6,13 +6,12 @@ import matplotlib.pyplot as plt
 base_dir = 'case1'
 
 # Output folders to use
-output_folders = ['output46', 'output47', 'output48', 'output49', 'output50']
+output_folders = ['output6', 'output7', 'output8']
 
 # Define linestyles for each plot
 linestyles = ['-', '--', ':', '-.', (0, (3, 5, 1, 5, 1, 5))]  # Solid, dashed, and dotted lines
 dx = ["$2000\,m$", "$1000\,m$", "$500\,m$"]
 dt = ["$1000\,s$", "$500\,s$", "$250\,s$", "$125\,s$"]
-dl = ["$0\,m^2s^{-1}$", "$100\,m^2s^{-1}$", "$200\,m^2s^{-1}$", "$300\,m^2s^{-1}$", "$400\,m^2s^{-1}$", ]
 
 # Initialize a list to store time and downstreamQ data for each folder
 time_data_list = []
@@ -50,7 +49,7 @@ if time_data_list and downstreamQ_data_list:
 
     # Plot each downstreamQxxxx data against its corresponding time data with different linestyles
     for i in range(len(time_data_list)):
-        plt.plot(time_data_list[i]/3600, downstreamQ_data_list[i], label='$D_{limit}=$' + f'{dl[i]}', linestyle=linestyles[i], color="k")
+        plt.plot(time_data_list[i]/3600, downstreamQ_data_list[i], linestyle=linestyles[i], color="k")
 
     # Labeling the plot
     plt.xlabel('Time (h)')
