@@ -4,27 +4,28 @@ from datetime import timedelta
 import numpy as np
 
 # Paths for the code and data files
-data_file_path = "../lowerMississippi/baton rouge/usgs.txt"
-output_file_path_h = "../lowerMississippi/upstreamH.txt"
-output_file_path_bc = "../lowerMississippi/upstreamBC.txt"
-output_file_path_bcdc = "../lowerMississippi/downstreamBC.txt"
-output_file_path_initQ = "../lowerMississippi/initialQ.txt"
-output_file_path_initH = "../lowerMississippi/initialH.txt"
+data_file_path = "lowerMississippi/baton rouge/usgs.txt"
+output_file_path_h = "lowerMississippi/dt500/upstreamH.txt"
+output_file_path_bc = "lowerMississippi/dt500/upstreamBC.txt"
+output_file_path_bcdc = "lowerMississippi/dt500/downstreamBC.txt"
+output_file_path_initQ = "lowerMississippi/dx500/initialQ.txt"
+output_file_path_initH = "lowerMississippi/dx500/initialH.txt"
 
-output_file_path_locs = "../lowerMississippi/locations.txt"
-output_file_path_mannings = "../lowerMississippi/mannings.txt"
-output_file_path_slopes = "../lowerMississippi/slopes.txt"
-output_file_path_source = "../lowerMississippi/source.txt"
+output_file_path_locs = "lowerMississippi/dx500/locations.txt"
+output_file_path_mannings = "lowerMississippi/dx500/mannings.txt"
+output_file_path_slopes = "lowerMississippi/dx500/slopes.txt"
+output_file_path_source = "lowerMississippi/dx500/source.txt"
 
 # Define the resample time interval (in seconds)
-dt = 1000.0  # Example: 3600 seconds (1 hour)
+dt = 500  # Example: 3600 seconds (1 hour)
 L = 86000
-dx = 1000
+dx = 500
+elevDiff = 1.5
 
 locs = np.arange(0,L+dx, dx)
 nodeNo = locs.shape[0]
 manns = np.ones(nodeNo) * .012
-slopes = np.ones(nodeNo) * 5 / L
+slopes = np.ones(nodeNo) * elevDiff / L
 source = np.zeros(nodeNo)
 
 # Conversion factors

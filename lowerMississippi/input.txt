@@ -1,35 +1,35 @@
 dt (sec):
-1000
+500
 
 diffusion coeff upper limit:
 1000
 
 path for locations (from the root of the case.py):
-lowerMississippi/dx1000/locations.txt
+lowerMississippi/dx500/locations.txt
 
 path for mannings:
-lowerMississippi/dx1000/mannings.txt
+lowerMississippi/dx500/mannings.txt
 
 path for bed slopes:
-lowerMississippi/dx1000/slopes.txt
+lowerMississippi/dx500/slopes.txt
 
 path for channel width:
 ---
 
 path for initial discharge (from the root of the case.py):
-lowerMississippi/dx1000/initialQ.txt
+lowerMississippi/dx500/initialQ.txt
 
 path for initial water level (from the root of the case.py):
-lowerMississippi/dx1000/initialH.txt
+lowerMississippi/dx500/initialH.txt
 
 path for upstream BC:
-lowerMississippi/dt1000/upstreamBC.txt
+lowerMississippi/dt500/upstreamBC.txt
 
 path for downstream BC:
-lowerMississippi/dt1000/downstreamBC.txt
+lowerMississippi/dt500/downstreamBC.txt
 
 path for source (lateral q):
-lowerMississippi/dx1000/source.txt
+lowerMississippi/dx500/source.txt
 
 boundary type (0 for dirichlet, 1 for neumann):
 [0,1]
@@ -41,7 +41,7 @@ print step:
 1000
 
 print output folder (use absolute path here):
-lowerMississippi/output/
+lowerMississippi/outputdx500dt500/
 
 type of rbf (MQ, TPS):
 TPS
@@ -59,7 +59,7 @@ simulation time in seconds:
 31536000
 
 path for upstream H:
-lowerMississippi/dt1000/upstreamH.txt
+lowerMississippi/dt500/upstreamH.txt
 
 path for river profile:
 lowerMississippi/riverProfile.txt

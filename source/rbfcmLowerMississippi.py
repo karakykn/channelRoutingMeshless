@@ -183,6 +183,7 @@ class SingleChannel(object):
         self.dsq = np.array([self.soln[-1]])
         self.usq = np.array([self.soln[0]])
         self.time = np.array([0])
+        self.dsh = np.array([self.h[-1]])
         us = self.USBC
         ds = self.DSBC
         timeIter = int(self.simTime / (self.dt))
@@ -220,6 +221,7 @@ class SingleChannel(object):
                     np.savetxt(self.outputFolder + "h" + f"{time:.0f}s" + ".txt", self.h)
 
                     self.dsq = np.append(self.dsq, self.soln[-1])
+                    self.dsh = np.append(self.dsh, self.h[-1])
                     self.usq = np.append(self.usq, self.soln[0])
                     self.time = np.append(self.time, time)
 
@@ -228,6 +230,7 @@ class SingleChannel(object):
             self.dsq = np.append(self.dsq, self.soln[-1])
             self.usq = np.append(self.usq, self.soln[0])
             self.time = np.append(self.time, time)
+            self.dsh = np.append(self.dsh, self.h[-1])
             print(f"Time: {self.time[-1]:.0f}s, the run is over.")
 
             np.savetxt(
@@ -242,6 +245,10 @@ class SingleChannel(object):
                 self.outputFolder + "time" + ".txt",
                 self.time
             )
+            np.savetxt(
+                self.outputFolder + "downstreamH" + "{:.0f}".format(self.locations[-1] / (self.nodeNo - 1)) + ".txt",
+                self.dsh
+            )
 
     def calculateH(self):
         csArea = self.Area_interpolator(self.h[0])
@@ -255,4 +262,23 @@ class SingleChannel(object):
             self.diff[i] = np.min([self.diffLimit, (np.abs(self.soln[i]) / 2 / (S_f) / cw)])
             self.conv[i] = 5 * (S_f) ** .3 * np.abs(self.soln[i]) ** .4 / 3 / cw ** .4 / self.mannings[i] ** .6
             self.h[i] = self.h[i - 1] - (self.slope[i] + (S_f + S_fBackward)/2) * (self.locations[i] - self.locations[i-1])
+            S_fBackward = S_f
+
+    def calculateH_iter(self):
+        csArea = self.Area_interpolator(self.h[0])
+        R = self.R_interpolator(self.h[0])
+        S_fBackward = self.mannings[0] ** 2 / (csArea * R ** (2 / 3)) ** 2 * self.soln[0] ** 2
+        for i in range(1, self.nodeNo):
+            res = 1
+            while res > 1e-4:
+                oldH = self.h[i]
+                cw = self.width_interpolator(self.h[i])
+                csArea = self.Area_interpolator(self.h[i])
+                R = self.R_interpolator(self.h[i])
+                S_f = self.mannings[i] ** 2 / (csArea * R ** (2 / 3)) ** 2 * self.soln[i] ** 2
+                self.h[i] = self.h[i - 1] - (self.slope[i] + (S_f + S_fBackward) / 2) * (
+                        self.locations[i] - self.locations[i - 1])
+                res = np.abs(oldH - self.h[i])
+            self.diff[i] = np.min([self.diffLimit, (np.abs(self.soln[i]) / 2 / (S_f) / cw)])
+            self.conv[i] = 5 * (S_f) ** .3 * np.abs(self.soln[i]) ** .4 / 3 / cw ** .4 / self.mannings[i] ** .6
             S_fBackward = S_f
